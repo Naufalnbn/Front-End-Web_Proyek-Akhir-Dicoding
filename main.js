@@ -1,15 +1,6 @@
-/**
- * ========================================================
- * Expense Tracker App — main.js
- * ========================================================
- * Tulis seluruh kode JavaScript kamu di sini.
- */
-
-// TODO [Basic] Buat variabel array untuk menyimpan semua data transaksi, contoh: let transactions = []
 let transactions = [];
 let editId = null;
 
-// TODO [Basic] Buat fungsi untuk menghasilkan ID unik secara otomatis, contoh: gunakan +new Date()
 function generateId() {
     return +new Date();
 }
@@ -17,13 +8,6 @@ function generateId() {
 const STORAGE_KEY = "transactions";
 const RENDER_EVENT = "transaction:updated";
 
-
-/**
- * ========================================================
- * Kriteria 1: Memanipulasi DOM untuk Form dan Daftar Transaksi
- * ========================================================
- */
-// TODO [Basic] Ambil elemen kontainer incomeList dan expenseList dari DOM
 const incomeList = document.getElementById("incomeList");
 const expenseList = document.getElementById("expenseList");
 const form = document.getElementById("transactionForm");
@@ -33,14 +17,6 @@ const dateInput = document.getElementById("transactionFormDateInput");
 const typeInput = document.getElementById("transactionFormTypeSelect");
 const submitButton = document.querySelector('[data-testid="transactionFormSubmitButton"]');
 
-/**
- * TODO [Basic]:
- * Buat fungsi untuk menampilkan (render) semua transaksi ke layar:
- *  - Kosongkan kontainer terlebih dahulu sebelum mengisi ulang
- *  - Gunakan perulangan, buat setiap elemen kartu dengan document.createElement()
- *  - Pastikan setiap elemen memiliki atribut data-testid yang sesuai (lihat panduan di rubrik)
- *  - Masukkan kartu ke kontainer yang tepat: income → incomeList, expense → expenseList
- */
 function renderTransactions(data = transactions){
     incomeList.innerHTML = "";
     expenseList.innerHTML = "";
@@ -114,8 +90,6 @@ function renderTransactions(data = transactions){
     }
 }
 
-// TODO [Basic] Tambahkan event listener 'submit' pada form, panggil e.preventDefault() di dalamnya
-// TODO [Basic] Di dalam handler submit, ambil nilai input lalu tambahkan sebagai objek transaksi baru ke array
 form.addEventListener("submit", function (e){
     e.preventDefault();
 
@@ -123,13 +97,6 @@ form.addEventListener("submit", function (e){
     const amount = Number(amountInput.value);
     const date = dateInput.value;
     const type = typeInput.value;
-
-    /**
-     * TODO [Skilled]:
-     * Tambahkan validasi input sebelum menyimpan data:
-     *  - Tampilkan alert() dan hentikan proses jika judul kosong
-     *  - Tampilkan alert() dan hentikan proses jika nominal kurang dari 1
-     */
 
     if (title.trim() == "") {
         alert("Judul transaksi tidak boleh kosong"); 
@@ -171,12 +138,6 @@ form.addEventListener("submit", function (e){
     form.reset();
 });
 
-/**
- * TODO [Advanced]:
- * Setiap kali data transaksi berubah, perbarui Panel Dasbor:
- *  - Hitung total pemasukan, total pengeluaran, dan saldo (pemasukan - pengeluaran)
- *  - Tampilkan hasilnya ke elemen yang sesuai di HTML
- */
 function updateSummary() {
     let totalIncome = 0;
     let totalExpense = 0;
@@ -196,12 +157,6 @@ function updateSummary() {
     document.querySelector(".tracker-summary__stat-amount--expense").innerText = "Rp " + totalExpense;
 }
 
-
-/**
- * ========================================================
- * Kriteria 2: Mengelola Penyimpanan Data (Web Storage API)
- * ========================================================
- */
 function saveData() {
     const parsed = JSON.stringify(transactions);
     localStorage.setItem(STORAGE_KEY, parsed);
@@ -217,11 +172,6 @@ function loadData() {
     document.dispatchEvent(new Event(RENDER_EVENT));
 }
 
-/**
- * TODO [Basic]:
- * Data transaksi disimpan ke localStorage menggunakan JSON.stringify(), dan dimuat kembali saat halaman dibuka menggunakan JSON.parse().
- *  - Tombol "Hapus" berfungsi: transaksi yang dihapus langsung hilang dari layar dan dari localStorage.
- */
 function deleteTransaction(id) {
     const newTransactions = [];
 
@@ -236,12 +186,6 @@ function deleteTransaction(id) {
     document.dispatchEvent(new Event(RENDER_EVENT));
 }
 
-/**
- * TODO [Skilled]:
- * Tombol "Edit" berfungsi: saat ditekan, formulir (#transactionForm) secara otomatis terisi dengan data transaksi yang dipilih.
- *  - Pengguna dapat mengubah data lalu menyimpan perubahan.
- *  - Formulir kembali ke mode "Tambah" setelah pembaruan selesai.
- */
 function editTransaction(id) {
     for (const transaction of transactions) {
         if (transaction.id == id) {
@@ -257,29 +201,11 @@ function editTransaction(id) {
     }
 }
 
-/**
- * TODO [Advanced]:
- * Gunakan Custom Event sebagai penghubung antara perubahan data dan pembaruan tampilan:
- *  - Kirim sinyal dengan document.dispatchEvent(new Event('transaction:updated')) setiap kali data berubah
- *  - Pasang satu listener untuk event tersebut yang memanggil fungsi render dan update dasbor
- */
 document.addEventListener(RENDER_EVENT, function () {
     renderTransactions();
     updateSummary();
 });
 
-
-/**
- * ========================================================
- * Kriteria 3: Fitur Interaktif (Pindah Kategori dan Pencarian)
- * ========================================================
- */
-/**
- * TODO [Basic]:
- * Tambahkan tombol "Ubah Tipe" pada setiap kartu transaksi:
- *  - Saat diklik, ubah tipe transaksi: 'income' → 'expense' atau 'expense' → 'income'
- *  - Simpan perubahan ke localStorage dan perbarui tampilan
- */
 function changeTransactionType(id) {
     for (const transaction of transactions) {
         if (transaction.id == id) {
@@ -297,12 +223,6 @@ function changeTransactionType(id) {
     document.dispatchEvent(new Event(RENDER_EVENT));
 }
 
-/**
- * TODO [Skilled]:
- * Tambahkan event listener 'input' pada kolom pencarian:
- *  - Filter array transaksi berdasarkan kecocokan kata kunci dengan judul transaksi
- *  - Tampilkan hanya transaksi yang judulnya mengandung kata kunci tersebut
- */
 const searchInput = document.getElementById("searchTransactionFormTitleInput");
 searchInput.addEventListener("input", function() {
     const keyword = this.value.toLowerCase();
@@ -321,12 +241,6 @@ searchInput.addEventListener("input", function() {
     }
     renderTransactions(filtered);
 });
-
-/**
- * TODO [Advanced]:
- * Pastikan fitur pencarian berjalan dengan baik di semua kondisi:
- *  - Saat kolom pencarian dikosongkan, tampilkan kembali seluruh daftar transaksi
- */
 
 document.getElementById("searchTransactionForm").addEventListener("submit", function (e) {
     e.preventDefault();
